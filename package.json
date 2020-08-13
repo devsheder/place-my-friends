@@ -7,10 +7,18 @@
     "start": "sirv public"
   },
   "devDependencies": {
+    "@material/typography": "^3.1.0",
     "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
+    "@smui/button": "^1.0.0-beta.20",
+    "@smui/icon-button": "^1.0.0",
+    "@smui/top-app-bar": "^1.0.0",
+    "node-sass": "^4.14.1",
     "rollup": "^2.3.4",
+    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.5",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.2",
     "svelte": "^3.0.0"
