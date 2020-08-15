@@ -20,59 +20,82 @@
   ];
   let newGuest = "";
   let tableCount = 2;
-  let tables = [[]];
+  let guestsTables = [[]];
 
+  /**
+   * Shuffle the array in a new array
+   * @param {string[]} array of strings
+   * @returns {string[]}
+   */
   const shuffleGuests = (array) => {
     const copy = array.slice();
-    array.sort(() => Math.random() - 0.5);
+    copy.sort(() => Math.random() - 0.5);
     return copy;
   };
 
-  const getTables = (guests, tableCount) => {
-    const guestsCount = guests.length;
-    const tableSize = Math.trunc(guestsCount / tableCount);
-    const other = guestsCount % tableCount;
-    let lastTableSize = tableSize;
-    if (other > 0) {
-      lastTableSize = tableSize + other;
+  /**
+   * Create tables and place guests on it
+   * @param {string[]} guests array of guest
+   * @param {string[]} tableCount number total of expected tables
+   * @returns {array[{string[]}]}
+   */
+  const getGuestsTables = (guests, tableCount) => {
+    let guestsCopy = guests.slice();
+    const guestsCount = guestsCopy.length;
+    // number of expected tables great than number of guests (=> 1 guest / table)
+    const tableSize =
+      guestsCount > tableCount ? Math.trunc(guestsCount / tableCount) : 1;
+    // check if there will be different number of guests on tables
+    const otherGuestsCount = guestsCount % tableCount;
+    let otherGuestsTable = [];
+
+    // he can not have same number of guests on each table
+    if (otherGuestsCount > 0 && otherGuestsCount !== guestsCount) {
+      otherGuestsTable = guestsCopy.slice(guestsCopy.length - otherGuestsCount);
+      guestsCopy.splice(guestsCopy.length - otherGuestsCount);
     }
+
+    // let's fill tables with same number of guests
     const tables = [];
-
-    for (let index = 0; index < guestsCount; index += tableSize) {
-      let maxSliceIndex = index + tableSize;
-      if (maxSliceIndex + tableSize > guestsCount) {
-        const table = guests.slice(index, index + lastTableSize);
-        tables.push(table);
-        break;
-      } else {
-        const table = guests.slice(index, maxSliceIndex);
-        tables.push(table);
-      }
-      console.log(tables.length, tableCount);
-      if (tables.length + 1 > tableCount) {
-        break;
-      }
+    for (let index = 0; index < guestsCopy.length; index += tableSize) {
+      const table = guestsCopy.slice(index, index + tableSize);
+      tables.push(table);
     }
 
-    console.log(tables);
+    // let's dispatch other guests, one guest per table
+    otherGuestsTable.forEach((element, index) => {
+      tables[index].push(element);
+    });
 
     return tables;
   };
 
-  const generateTables = () => {
+  /**
+   * Shuffled guests array
+   */
+  const onGenerateGuestsTables = () => {
     const shuffled = shuffleGuests(guests);
-    tables = getTables(shuffled, parseInt(tableCount));
+    guestsTables = getGuestsTables(shuffled, parseInt(tableCount));
   };
 
-  const clearTables = () => (tables = [[]]);
+  /**
+   * Shuffled guests array
+   */
+  const onClearGuestsTables = () => (guestsTables = [[]]);
 
-  const addGuest = () => {
+  /**
+   * Add a new guest on guests array
+   */
+  const onAddGuest = () => {
     if (!!newGuest && newGuest.trim() !== "") {
       guests = [...guests, newGuest];
       newGuest = "";
     }
   };
 
+  /**
+   * Remove a guest from guests array
+   */
   const removeGuest = (index) => {
     const copy = guests.slice();
     copy.splice(index, 1);
@@ -109,22 +132,22 @@
     {/each}
     <li>
       <input type="text" bind:value={newGuest} />
-      <IconButton on:click={addGuest}>
+      <IconButton on:click={onAddGuest}>
         <Icon class="material-icons">add</Icon>
       </IconButton>
     </li>
   </ul>
 
-  <Button on:click={generateTables}>
+  <Button on:click={onGenerateGuestsTables}>
     <Label>Go !</Label>
   </Button>
 
-  <Button on:click={clearTables}>
+  <Button on:click={onClearGuestsTables}>
     <Label>Tout le monde dehors</Label>
   </Button>
 
   <ul>
-    {#each tables as table, i}
+    {#each guestsTables as table, i}
       {#if table.length > 0}
         <li>
           Table n°{i + 1} :
